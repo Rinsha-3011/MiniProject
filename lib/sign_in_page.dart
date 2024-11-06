@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mynewapp/homepage.dart';
+import 'package:mynewapp/login_page.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'auth.dart';  // Make sure to import your AuthService
 
@@ -47,10 +49,17 @@ class _SignInPageState extends State<SignInPage> {
           },
         );
 
-        if (user != null) {
+        if (user?.email != null) {
           // User signed up successfully, navigate to the home page or login
-          _showMessage('Sign-up successful. Welcome, ${user.email}');
-          Navigator.pop(context); // Navigate back to the previous screen (or home page)
+          // _showMessage('Sign-up successful. Welcome, ${user?.email}');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('Sign-up successful. Welcome, ${user?.email}')
+            )
+          );
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false); // Navigate back to the previous screen (or home page)
+        } else {
+          print("Some Error occured while signup");
         }
       } catch (e) {
         _showMessage('Error signing up: $e');
@@ -64,12 +73,12 @@ class _SignInPageState extends State<SignInPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Message'),
+          title: const Text('Message'),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -81,7 +90,7 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up'),
+        title: const Text('Sign Up'),
         backgroundColor: Colors.orange,
       ),
       body: Padding(
@@ -92,10 +101,10 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Name', style: TextStyle(fontSize: 18)),
+                const Text('Name', style: TextStyle(fontSize: 18)),
                 TextFormField(
                   controller: nameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Enter your name',
                   ),
@@ -106,9 +115,9 @@ class _SignInPageState extends State<SignInPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-                Text('Preferred Cuisine', style: TextStyle(fontSize: 18)),
+                const Text('Preferred Cuisine', style: TextStyle(fontSize: 18)),
                 DropdownButtonFormField<String>(
                   value: selectedCuisine,
                   items: cuisines.map((String cuisine) {
@@ -122,13 +131,13 @@ class _SignInPageState extends State<SignInPage> {
                       selectedCuisine = newCuisine!;
                     });
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-                Text('Dietary Restriction', style: TextStyle(fontSize: 18)),
+                const Text('Dietary Restriction', style: TextStyle(fontSize: 18)),
                 DropdownButtonFormField<String>(
                   value: selectedDietaryRestriction,
                   items: dietaryRestrictions.map((String restriction) {
@@ -142,16 +151,16 @@ class _SignInPageState extends State<SignInPage> {
                       selectedDietaryRestriction = newRestriction!;
                     });
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-                Text('Email', style: TextStyle(fontSize: 18)),
+                const Text('Email', style: TextStyle(fontSize: 18)),
                 TextFormField(
                   controller: emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Enter your email',
                   ),
@@ -166,13 +175,12 @@ class _SignInPageState extends State<SignInPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
-
-                Text('Password', style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 16),
+                const Text('Password', style: TextStyle(fontSize: 18)),
                 TextFormField(
                   controller: passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Enter your password',
                   ),
@@ -186,13 +194,13 @@ class _SignInPageState extends State<SignInPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-                Text('Confirm Password', style: TextStyle(fontSize: 18)),
+                const Text('Confirm Password', style: TextStyle(fontSize: 18)),
                 TextFormField(
                   controller: confirmPasswordController,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Confirm your password',
                   ),
@@ -206,15 +214,18 @@ class _SignInPageState extends State<SignInPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
-
-                ElevatedButton(
-                  onPressed: _signUp,
-                  child: Text('Sign Up'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    textStyle: TextStyle(fontSize: 16),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.center,
+                  child: ElevatedButton(
+                    onPressed: _signUp,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
+                    child: const Text('Sign Up'),
                   ),
                 ),
               ],

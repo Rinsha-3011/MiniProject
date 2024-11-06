@@ -1,4 +1,5 @@
 // lib/pages/recipe_detail_page.dart
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class RecipeDetailPage extends StatelessWidget {
@@ -30,19 +31,23 @@ class RecipeDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+          title: Text(title),
+        backgroundColor: Colors.orangeAccent,
+        foregroundColor: Colors.white,
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
-              imageUrl,errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                return Image.asset('assets/images/placeholder.png'); // Replace with your placeholder image
-              },
+            CachedNetworkImage(
+              imageUrl: imageUrl,
+              placeholder: (context, url) => Image.asset('assets/images/placeholder.jpeg'),
+                errorWidget: (context, url, error) => Image.asset('assets/images/placeholder.jpeg')
             ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            const SizedBox(height: 10),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 'Ingredients:',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
@@ -57,9 +62,9 @@ class RecipeDetailPage extends StatelessWidget {
                 }).toList(),
               ),
             ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            const SizedBox(height: 10),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 'Instructions:',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),

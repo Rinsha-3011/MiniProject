@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mynewapp/advanced_recipe_list_page.dart';
+import 'package:mynewapp/data/local_storage/shared_preference.dart';
 import 'dart:convert';
+
+import 'package:mynewapp/data/models/recipes.dart';
+import 'package:mynewapp/services/service_locator.dart';
 
 class AdvancedSearchPage extends StatefulWidget {
   @override
@@ -13,13 +18,16 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
   String? selectedDifficulty;
   String? selectedTime;
 
+  final sharedPrefService = serviceLocator<SharedPreferencesService>();
+
   final List<String> cuisines = ['Italian', 'Chinese', 'Mexican', 'Indian'];
-  final List<String> diets = ['Vegan', 'Vegetarian', 'Gluten Free', 'Ketogenic'];
+  final List<String> diets = ['Vegan', 'Vegetarian', 'Gluten Free', 'Ketogenic', 'None'];
   final List<String> difficulties = ['Easy', 'Medium', 'Hard'];
   final List<String> times = ['Under 30 minutes', '30-60 minutes', 'Over 60 minutes'];
 
   Future<void> _searchRecipes() async {
-    String apiKey = '19db8be00ca84d3a9aa48caa2934852f'; // Your API key
+    _showLoadingDialog();
+    String apiKey = 'c6ab8afed6414c3e994ecafdbd0ee35b'; // Your API key
     String url = 'https://api.spoonacular.com/recipes/complexSearch?apiKey=$apiKey';
 
     // Construct the query parameters
@@ -40,19 +48,32 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
     }
 
     // Construct full URL with parameters
-    String fullUrl = url + '&' + Uri(queryParameters: queryParams).query;
+    String fullUrl = '$url&${Uri(queryParameters: queryParams).query}';
     print('Request URL: $fullUrl'); // For debugging
 
     final response = await http.get(Uri.parse(fullUrl));
 
     if (response.statusCode == 200) {
+      Navigator.of(context).pop();
       var data = json.decode(response.body);
+      var results = Recipes.fromJson(data);
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => AdvancedRecipeListPage(advancedRecipes: results),
+      ));
       // Handle the data as needed, e.g., navigate to a results page
       print(data);
     } else {
+      Navigator.of(context).pop();
       // Handle error
       print('Error: ${response.statusCode}');
     }
+  }
+
+  @override
+  void initState() {
+    selectedCuisine = sharedPrefService.preferredCuisine;
+    selectedDiet = sharedPrefService.dietryRestriction;
+    super.initState();
   }
 
   @override
@@ -127,10 +148,28 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
             ElevatedButton(
               onPressed: _searchRecipes,
               child: Text('Search Recipes'),
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.indigo),
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white)
+                )
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showLoadingDialog() {
+    showDialog(
+        context: context,
+        builder: (context) => const Dialog(
+          child: SizedBox(
+            height: 100.0,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        )
     );
   }
 }

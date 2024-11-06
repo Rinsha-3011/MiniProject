@@ -1,7 +1,10 @@
 // lib/pages/search_by_ingredient_page.dart
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mynewapp/data/models/ingredient_recipes.dart';
+import 'package:mynewapp/ingredient_recipe_list_page.dart';
 import 'dart:convert';
+
 
 class SearchByIngredientPage extends StatefulWidget {
   @override
@@ -16,7 +19,7 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
   };
 
   Map<String, bool> _selectedIngredients = {};
-  final String apiKey = '19db8be00ca84d3a9aa48caa2934852f'; // Replace with your API key
+  final String apiKey = 'c6ab8afed6414c3e994ecafdbd0ee35b'; // Replace with your API key
 
   @override
   void initState() {
@@ -38,16 +41,23 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
       _showMessage('Please select at least one ingredient.');
       return;
     }
+    _showLoadingDialog();
 
     String ingredientList = selected.join(',');
+    print("Request URL: 'https://api.spoonacular.com/recipes/findByIngredients?ingredients=$ingredientList&apiKey=$apiKey");
     final response = await http.get(Uri.parse(
         'https://api.spoonacular.com/recipes/findByIngredients?ingredients=$ingredientList&apiKey=$apiKey'));
 
     if (response.statusCode == 200) {
-      List<dynamic> recipes = json.decode(response.body);
-      List<RecipeDetail> recipeDetails = await _fetchRecipeDetails(recipes);
-      _showRecipes(recipeDetails);
+      Navigator.of(context).pop();
+      final recipes = json.decode(response.body);
+      final ingredientRecipes = List<IngredientRecipes>.from(recipes.map((x) => IngredientRecipes.fromJson(x)));
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => IngredientRecipeListPage(recipes: ingredientRecipes)));
+      // List<RecipeDetail> recipeDetails = await _fetchRecipeDetails(recipes);
+      // Navigator.of(context).pop();
+      // _showRecipes(recipeDetails);
     } else {
+      Navigator.of(context).pop();
       _showMessage('Failed to fetch recipes.');
     }
   }
@@ -71,7 +81,7 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Recipes'),
+          title: const Text('Recipes'),
           content: SizedBox(
             width: double.maxFinite,
             height: 400, // Set a height to allow scrolling
@@ -91,7 +101,7 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
           ),
           actions: [
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -113,18 +123,18 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.network(recipe.imageUrl),
-                SizedBox(height: 10),
-                Text('Ingredients:'),
+                const SizedBox(height: 10),
+                const Text('Ingredients:'),
                 ...recipe.ingredients.map((ingredient) => Text('- $ingredient')).toList(),
-                SizedBox(height: 10),
-                Text('Instructions:'),
+                const SizedBox(height: 10),
+                const Text('Instructions:'),
                 Text(recipe.instructions),
               ],
             ),
           ),
           actions: [
             TextButton(
-              child: Text('Close'),
+              child: const Text('Close'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -140,11 +150,11 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Message'),
+          title: const Text('Message'),
           content: Text(message),
           actions: [
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -155,10 +165,28 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
     );
   }
 
+  void _showLoadingDialog() {
+    showDialog(
+        context: context,
+        builder: (context) => const Dialog(
+          child: SizedBox(
+            height: 100.0,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Search by Ingredient')),
+      appBar: AppBar(
+          title: const Text('Search by Ingredient'),
+          backgroundColor: Colors.orangeAccent,
+          foregroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -172,12 +200,13 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
                     children: [
                       Text(
                         entry.key,
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       ...entry.value.map((ingredient) {
                         return CheckboxListTile(
                           title: Text(ingredient),
                           value: _selectedIngredients[ingredient],
+                          activeColor: Colors.orangeAccent,
                           onChanged: (bool? value) {
                             setState(() {
                               _selectedIngredients[ingredient] = value ?? false;
@@ -185,16 +214,24 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
                           },
                         );
                       }).toList(),
-                      Divider(),
+                      const Divider(),
                     ],
                   );
                 }).toList(),
               ),
             ),
-            ElevatedButton(
-              onPressed: _searchRecipes,
-              child: Text('Search Recipes'),
-              style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 10)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _searchRecipes,
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent),
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white)
+                  ),
+                  child: const Text('Search Recipes'),
+                ),
+              ],
             ),
           ],
         ),

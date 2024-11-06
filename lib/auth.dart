@@ -18,9 +18,13 @@ class AuthService {
       User? user = result.user;
 
       if (user != null) {
-        await _firestore.collection('users').doc(user.uid).set(userData);
+        try {
+          await _firestore.collection('users').doc(user.uid).set(userData);
+        } catch(e) {
+          print("Firestore error: $e");
+          throw e;
+        }
       }
-
       return user;
     } catch (error) {
       throw error;

@@ -5,7 +5,11 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('About Recipe Finder')),
+      appBar: AppBar(
+          title: Text('About Recipe Finder'),
+        backgroundColor: Colors.orangeAccent,
+        foregroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

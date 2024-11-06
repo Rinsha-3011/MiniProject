@@ -1,8 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mynewapp/data/local_storage/shared_preference.dart';
+import 'package:mynewapp/data/models/user.dart';
+import 'package:mynewapp/homepage.dart';
+import 'package:mynewapp/services/service_locator.dart';
+import 'package:mynewapp/sign_in_page.dart';
 import 'auth.dart';
 
 class LoginPage extends StatelessWidget {
+  final sharedPrefService = serviceLocator<SharedPreferencesService>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final AuthService _authService = AuthService();
@@ -16,6 +23,26 @@ class LoginPage extends StatelessWidget {
         email: email,
         password: password,
       );
+      if(userCredential.user?.uid != null) {
+        DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user?.uid) // Access the document using the user's UID
+            .get();
+        if(documentSnapshot.exists) {
+          print("Documents: ${documentSnapshot.data()}");
+          final user = UserDetails.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+          sharedPrefService.userName = user.name;
+          sharedPrefService.email = user.email;
+          sharedPrefService.dietryRestriction = user.dietaryRestriction;
+          sharedPrefService.preferredCuisine = user.preferredCuisine;
+          sharedPrefService.userUid = userCredential.user!.uid;
+          sharedPrefService.userLoggedInFlag = true;
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => HomePage()), (Route<dynamic> route) => false);
+        } else {
+          print("User data fetch error");
+        }
+        // sharedPrefService.userLoggedInFlag = true;
+      }
 
       print('User logged in: ${userCredential.user!.email}');
       // Navigate to the home page or another screen here
@@ -25,14 +52,14 @@ class LoginPage extends StatelessWidget {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Login Failed'),
+            title: const Text('Login Failed'),
             content: Text(e.toString()),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -46,9 +73,10 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.blueGrey[50],
       appBar: AppBar(
-        title: Text('Login'),
+        title: const Text('Login'),
         centerTitle: true,
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.orangeAccent,
+        foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -61,11 +89,11 @@ class LoginPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'Welcome Back!',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.orangeAccent),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   TextField(
                     controller: emailController,
                     decoration: InputDecoration(
@@ -73,11 +101,11 @@ class LoginPage extends StatelessWidget {
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                       filled: true,
                       fillColor: Colors.white,
-                      prefixIcon: Icon(Icons.email),
+                      prefixIcon: const Icon(Icons.email),
                     ),
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextField(
                     controller: passwordController,
                     decoration: InputDecoration(
@@ -85,26 +113,27 @@ class LoginPage extends StatelessWidget {
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                       filled: true,
                       fillColor: Colors.white,
-                      prefixIcon: Icon(Icons.lock),
+                      prefixIcon: const Icon(Icons.lock),
                     ),
                     obscureText: true,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () => login(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                      backgroundColor: Colors.orangeAccent,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 30),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: Text('Login', style: TextStyle(fontSize: 16)),
+                    child: const Text('Login', style: TextStyle(fontSize: 16)),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   TextButton(
                     onPressed: () {
-                      // Navigate to the signup page or handle forgot password
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => SignInPage()));
                     },
-                    child: Text('Forgot Password?', style: TextStyle(color: Colors.blueAccent)),
+                    child: const Text('Sign Up?', style: TextStyle(color: Colors.black)),
                   ),
                 ],
               ),
