@@ -19,25 +19,30 @@ class LoginPage extends StatelessWidget {
     String password = passwordController.text;
 
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      if(userCredential.user?.uid != null) {
+      if (userCredential.user?.uid != null) {
         DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
             .collection('users')
-            .doc(userCredential.user?.uid) // Access the document using the user's UID
+            .doc(userCredential
+                .user?.uid) // Access the document using the user's UID
             .get();
-        if(documentSnapshot.exists) {
+        if (documentSnapshot.exists) {
           print("Documents: ${documentSnapshot.data()}");
-          final user = UserDetails.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+          final user = UserDetails.fromJson(
+              documentSnapshot.data() as Map<String, dynamic>);
           sharedPrefService.userName = user.name;
           sharedPrefService.email = user.email;
           sharedPrefService.dietryRestriction = user.dietaryRestriction;
           sharedPrefService.preferredCuisine = user.preferredCuisine;
           sharedPrefService.userUid = userCredential.user!.uid;
           sharedPrefService.userLoggedInFlag = true;
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => HomePage()), (Route<dynamic> route) => false);
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomePage()),
+              (Route<dynamic> route) => false);
         } else {
           print("User data fetch error");
         }
@@ -83,7 +88,8 @@ class LoginPage extends StatelessWidget {
         child: Center(
           child: Card(
             elevation: 8,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -91,14 +97,18 @@ class LoginPage extends StatelessWidget {
                 children: [
                   const Text(
                     'Welcome Back!',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.orangeAccent),
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orangeAccent),
                   ),
                   const SizedBox(height: 20),
                   TextField(
                     controller: emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
                       filled: true,
                       fillColor: Colors.white,
                       prefixIcon: const Icon(Icons.email),
@@ -110,7 +120,8 @@ class LoginPage extends StatelessWidget {
                     controller: passwordController,
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
                       filled: true,
                       fillColor: Colors.white,
                       prefixIcon: const Icon(Icons.lock),
@@ -123,17 +134,21 @@ class LoginPage extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orangeAccent,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 30),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 30),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                     ),
                     child: const Text('Login', style: TextStyle(fontSize: 16)),
                   ),
                   const SizedBox(height: 10),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => SignInPage()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => SignInPage()));
                     },
-                    child: const Text('Sign Up?', style: TextStyle(color: Colors.black)),
+                    child: const Text('Sign Up?',
+                        style: TextStyle(color: Colors.black)),
                   ),
                 ],
               ),

@@ -12,18 +12,19 @@ class Recipes {
   });
 
   factory Recipes.fromJson(Map<String, dynamic> json) => Recipes(
-    results: List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
-    offset: json["offset"],
-    number: json["number"],
-    totalResults: json["totalResults"],
-  );
+        results:
+            List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
+        offset: json["offset"],
+        number: json["number"],
+        totalResults: json["totalResults"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "results": List<dynamic>.from(results.map((x) => x.toJson())),
-    "offset": offset,
-    "number": number,
-    "totalResults": totalResults,
-  };
+        "results": List<dynamic>.from(results.map((x) => x.toJson())),
+        "offset": offset,
+        "number": number,
+        "totalResults": totalResults,
+      };
 }
 
 class Result {
@@ -40,16 +41,16 @@ class Result {
   });
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-    id: json["id"],
-    title: json["title"],
-    image: json["image"],
-    imageType: json["imageType"],
-  );
+        id: json["id"],
+        title: json["title"],
+        image: json["image"],
+        imageType: json["imageType"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "title": title,
-    "image": image,
-    "imageType": imageType,
-  };
+        "id": id,
+        "title": title,
+        "image": image,
+        "imageType": imageType,
+      };
 }

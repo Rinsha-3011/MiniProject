@@ -12,16 +12,16 @@ class UserDetails {
   });
 
   factory UserDetails.fromJson(Map<String, dynamic> json) => UserDetails(
-    dietaryRestriction: json["dietaryRestriction"],
-    name: json["name"],
-    preferredCuisine: json["preferredCuisine"],
-    email: json["email"],
-  );
+        dietaryRestriction: json["dietaryRestriction"],
+        name: json["name"],
+        preferredCuisine: json["preferredCuisine"],
+        email: json["email"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "dietaryRestriction": dietaryRestriction,
-    "name": name,
-    "preferredCuisine": preferredCuisine,
-    "email": email,
-  };
+        "dietaryRestriction": dietaryRestriction,
+        "name": name,
+        "preferredCuisine": preferredCuisine,
+        "email": email,
+      };
 }

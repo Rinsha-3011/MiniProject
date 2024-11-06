@@ -20,7 +20,7 @@ class AuthService {
       if (user != null) {
         try {
           await _firestore.collection('users').doc(user.uid).set(userData);
-        } catch(e) {
+        } catch (e) {
           print("Firestore error: $e");
           throw e;
         }

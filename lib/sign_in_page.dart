@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mynewapp/homepage.dart';
+import 'package:flutter/material.dart';
 import 'package:mynewapp/login_page.dart';
+
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'auth.dart';  // Make sure to import your AuthService
 
@@ -52,11 +52,8 @@ class _SignInPageState extends State<SignInPage> {
         if (user?.email != null) {
           // User signed up successfully, navigate to the home page or login
           // _showMessage('Sign-up successful. Welcome, ${user?.email}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Sign-up successful. Welcome, ${user?.email}')
-            )
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Sign-up successful. Welcome, ${user?.email}')));
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false); // Navigate back to the previous screen (or home page)
         } else {
           print("Some Error occured while signup");

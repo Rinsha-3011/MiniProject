@@ -17,7 +17,7 @@ class RecipeDetailPage extends StatelessWidget {
 
   // Factory constructor to create an instance from JSON
   factory RecipeDetailPage.fromJson(Map<String, dynamic> json) {
-    print('Image URL: ${json['image']}'); 
+    print('Image URL: ${json['image']}');
     return RecipeDetailPage(
       title: json['title'],
       imageUrl: json['image'],
@@ -32,7 +32,7 @@ class RecipeDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(title),
+        title: Text(title),
         backgroundColor: Colors.orangeAccent,
         foregroundColor: Colors.white,
       ),
@@ -41,10 +41,11 @@ class RecipeDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CachedNetworkImage(
-              imageUrl: imageUrl,
-              placeholder: (context, url) => Image.asset('assets/images/placeholder.jpeg'),
-                errorWidget: (context, url, error) => Image.asset('assets/images/placeholder.jpeg')
-            ),
+                imageUrl: imageUrl,
+                placeholder: (context, url) =>
+                    Image.asset('assets/images/placeholder.jpeg'),
+                errorWidget: (context, url, error) =>
+                    Image.asset('assets/images/placeholder.jpeg')),
             const SizedBox(height: 10),
             const Padding(
               padding: EdgeInsets.all(16.0),

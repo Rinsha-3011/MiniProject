@@ -27,8 +27,8 @@ class _IngredientRecipeListPageState extends State<IngredientRecipeListPage> {
               'Ingredient Recipe List'
             ),
             backgroundColor: Colors.orangeAccent,
-            foregroundColor: Colors.white,
-          ),
+        foregroundColor: Colors.white,
+      ),
           body: SizedBox(
             height: MediaQuery.of(context).size.height,
             child: ListView.separated(

@@ -25,30 +25,24 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 50,),
-                Text(
-                    "Name: ${sharedPrefService.userName}",
-                  style: const TextStyle(
-                    fontSize: 20
-                  ),
+                const SizedBox(
+                  height: 50,
                 ),
                 Text(
-                    "Email Id: ${sharedPrefService.email}",
-                  style: const TextStyle(
-                      fontSize: 20
-                  ),
+                  "Name: ${sharedPrefService.userName}",
+                  style: const TextStyle(fontSize: 20),
                 ),
                 Text(
-                    "Dietry Restriction: ${sharedPrefService.dietryRestriction}",
-                  style: const TextStyle(
-                      fontSize: 20
-                  ),
+                  "Email Id: ${sharedPrefService.email}",
+                  style: const TextStyle(fontSize: 20),
                 ),
                 Text(
-                    "Preferred Cuisine: ${sharedPrefService.preferredCuisine}",
-                  style: const TextStyle(
-                      fontSize: 20
-                  ),
+                  "Dietry Restriction: ${sharedPrefService.dietryRestriction}",
+                  style: const TextStyle(fontSize: 20),
+                ),
+                Text(
+                  "Preferred Cuisine: ${sharedPrefService.preferredCuisine}",
+                  style: const TextStyle(fontSize: 20),
                 ),
               ],
             ),

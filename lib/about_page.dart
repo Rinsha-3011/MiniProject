@@ -6,7 +6,7 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('About Recipe Finder'),
+        title: Text('About Recipe Finder'),
         backgroundColor: Colors.orangeAccent,
         foregroundColor: Colors.white,
       ),

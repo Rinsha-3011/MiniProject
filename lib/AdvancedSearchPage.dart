@@ -21,14 +21,25 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
   final sharedPrefService = serviceLocator<SharedPreferencesService>();
 
   final List<String> cuisines = ['Italian', 'Chinese', 'Mexican', 'Indian'];
-  final List<String> diets = ['Vegan', 'Vegetarian', 'Gluten Free', 'Ketogenic', 'None'];
+  final List<String> diets = [
+    'Vegan',
+    'Vegetarian',
+    'Gluten Free',
+    'Ketogenic',
+    'None'
+  ];
   final List<String> difficulties = ['Easy', 'Medium', 'Hard'];
-  final List<String> times = ['Under 30 minutes', '30-60 minutes', 'Over 60 minutes'];
+  final List<String> times = [
+    'Under 30 minutes',
+    '30-60 minutes',
+    'Over 60 minutes'
+  ];
 
   Future<void> _searchRecipes() async {
     _showLoadingDialog();
     String apiKey = 'c6ab8afed6414c3e994ecafdbd0ee35b'; // Your API key
-    String url = 'https://api.spoonacular.com/recipes/complexSearch?apiKey=$apiKey';
+    String url =
+        'https://api.spoonacular.com/recipes/complexSearch?apiKey=$apiKey';
 
     // Construct the query parameters
     Map<String, String> queryParams = {};
@@ -44,7 +55,9 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
     if (selectedTime != null) {
       queryParams['maxReadyTime'] = selectedTime!.contains('Under')
           ? '30'
-          : selectedTime!.contains('30-60') ? '60' : '120'; // Approximate time limits
+          : selectedTime!.contains('30-60')
+              ? '60'
+              : '120'; // Approximate time limits
     }
 
     // Construct full URL with parameters
@@ -146,13 +159,13 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _searchRecipes,
-              child: Text('Search Recipes'),
+                onPressed: _searchRecipes,
+                child: Text('Search Recipes'),
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.indigo),
-                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white)
-                )
-            ),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.indigo),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white))),
           ],
         ),
       ),
@@ -163,13 +176,12 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
     showDialog(
         context: context,
         builder: (context) => const Dialog(
-          child: SizedBox(
-            height: 100.0,
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
-        )
-    );
+              child: SizedBox(
+                height: 100.0,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ));
   }
 }

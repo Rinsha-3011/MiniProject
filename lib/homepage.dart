@@ -13,13 +13,15 @@ import 'SearchByIngredientPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'AdvancedSearchPage.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final String apiKey = 'c6ab8afed6414c3e994ecafdbd0ee35b'; // Replace with your API key
+  final String apiKey =
+      'c6ab8afed6414c3e994ecafdbd0ee35b'; // Replace with your API key
   bool isLoading = false;
   final sharedPrefService = serviceLocator<SharedPreferencesService>();
   final TextEditingController _searchController = TextEditingController();
@@ -33,32 +35,36 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       isLoading = true;
     });
-    final url = 'https://api.spoonacular.com/recipes/complexSearch?query=$recipeName&apiKey=$apiKey';
+    final url =
+        'https://api.spoonacular.com/recipes/complexSearch?query=$recipeName&apiKey=$apiKey';
     print('Request URL: $url');
     try {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      setState(() {
-        isLoading = false;
-      });
-      var data = json.decode(response.body);
-      print(data); // Debugging output
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        setState(() {
+          isLoading = false;
+        });
+        var data = json.decode(response.body);
+        print(data); // Debugging output
 
-      if (data['results'].isNotEmpty) {
-        var recipes = Recipes.fromJson(data);
-        Navigator.push(context, MaterialPageRoute(
-          builder: (context) => RecipeListPage(recipesList: recipes),
-        ));
+        if (data['results'].isNotEmpty) {
+          var recipes = Recipes.fromJson(data);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RecipeListPage(recipesList: recipes),
+              ));
+        } else {
+          _showMessage('No recipes found for "$recipeName".');
+        }
       } else {
-        _showMessage('No recipes found for "$recipeName".');
+        setState(() {
+          isLoading = false;
+        });
+        _showMessage(
+            'Failed to fetch recipes. Response code: ${response.statusCode}');
       }
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      _showMessage('Failed to fetch recipes. Response code: ${response.statusCode}');
-      }
-  }catch (e) {
+    } catch (e) {
       print("Exception: $e");
       _showMessage('An error occurred: $e');
     }
@@ -76,13 +82,14 @@ class _HomePageState extends State<HomePage> {
               child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
-               },
+              },
             ),
           ],
         );
       },
     );
-  }  
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,17 +109,24 @@ class _HomePageState extends State<HomePage> {
         leading: PopupMenuButton<String>(
           icon: const Icon(Icons.menu), // Menu icon on the left
           onSelected: (value) {
-            if(sharedPrefService.userUid != "") {
+            if (sharedPrefService.userUid != "") {
               if (value == 'Search by Ingredient') {
                 // Navigate to Search by Ingredient Page
                 // Uncomment and create the respective page
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SearchByIngredientPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SearchByIngredientPage()));
               } else if (value == 'Advanced Search') {
                 // Navigate to Advanced Search Page
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AdvancedSearchPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AdvancedSearchPage()));
               }
             } else {
-              _showMessage("Only members can access this sections, Please login to access");
+              _showMessage(
+                  "Only members can access this sections, Please login to access");
             }
           },
           itemBuilder: (BuildContext context) {
@@ -129,56 +143,58 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         actions: [
-          sharedPrefService.userUid != "" ?
-          IconButton(onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('Logout'),
-                  content: Text("Are you sure you want to logout?"),
-                  actions: [
-                    TextButton(
-                      child: const Text('Cancel'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    TextButton(
-                      child: const Text('Logout'),
-                      onPressed: () {
-                        setState(() {
-                          sharedPrefService.clearData();
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Logged out successfully')
-                            )
+          sharedPrefService.userUid != ""
+              ? IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Logout'),
+                          content: Text("Are you sure you want to logout?"),
+                          actions: [
+                            TextButton(
+                              child: const Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('Logout'),
+                              onPressed: () {
+                                setState(() {
+                                  sharedPrefService.clearData();
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content:
+                                            Text('Logged out successfully')));
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
                         );
-                        Navigator.of(context).pop();
                       },
-                    ),
-                  ],
-                );
-              },
-            );
-          }, icon: Icon(Icons.power_settings_new_outlined))
+                    );
+                  },
+                  icon: Icon(Icons.power_settings_new_outlined))
               : IconButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
-              },
-              icon: Icon(Icons.login)
-          ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  },
+                  icon: Icon(Icons.login)),
           IconButton(
               onPressed: () {
-                if(sharedPrefService.userUid != "") {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfilePage()));
+                if (sharedPrefService.userUid != "") {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ProfilePage()));
                 } else {
-                  _showMessage("Only members can access these sections, Please login to access");
+                  _showMessage(
+                      "Only members can access these sections, Please login to access");
                 }
               },
-              icon: const Icon(Icons.person)
-          ),
+              icon: const Icon(Icons.person)),
           // PopupMenuButton<String>(
           //   icon: const Icon(Icons.person_rounded),
           //   onSelected: (value) {
@@ -223,106 +239,109 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.info),
             onPressed: () {
               Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AboutPage()),
-    );// Navigate to about
+                context,
+                MaterialPageRoute(builder: (context) => AboutPage()),
+              ); // Navigate to about
             },
           ),
         ],
       ),
-      body: isLoading ? const Center(child: CircularProgressIndicator()) : Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/food_background.jpg'), // Add your background image here
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TypeAheadField(
-                  controller: _searchController,
-                  builder: (context, editingController, node) {
-                    return TextField(
-                        controller: editingController,
-                        focusNode: node,
-                        autofocus: true,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Search Recipes',
-                          prefixIcon: Icon(Icons.search),
-                          filled: true,
-                          fillColor: Colors.white
-                        ),
-                      onSubmitted: (value) {
-                          _searchRecipe(value);
-                      },
-                    );
-                  },
-                    itemBuilder: (context, Map<String, dynamic> suggestion) {
-                      return ListTile(
-                        leading: Image.network(
-                          suggestion['imageUrl'],
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        ),
-                        title: Text(suggestion['title']),
-                      );
-                    },
-                    onSelected: (Map<String, dynamic> suggestion) {
-                      // Handle suggestion selection (e.g., navigate to details page)
-                      _searchController.text = suggestion['title'];
-                      print('Selected recipe: ${suggestion['title']}');
-                    },
-                    suggestionsCallback: (pattern) async {
-                      return await _getRecipeSuggestions(pattern);
-                    },
-                  emptyBuilder: (context) => const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('No recipes found.'),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Stack(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/food_background.jpg'),
+                      // Add your background image here
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                // child: TextField(
-                //   controller: _searchController,
-                //   decoration: InputDecoration(
-                //     hintText: 'Search for recipes...',
-                //     filled: true,
-                //     fillColor: Colors.white,
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(10.0),
-                //       borderSide: BorderSide.none,
-                //     ),
-                //     prefixIcon: const Icon(Icons.search),
-                //   ),
-                //   onSubmitted: (value) {
-                //     _searchRecipe(value);
-                //     // Implement search functionality
-                //   },
-                // ),
-              ),
-              
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () async {
-                  _searchRecipe(_searchController.text);// Navigate to search
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  textStyle: const TextStyle(fontSize: 16),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TypeAheadField(
+                        controller: _searchController,
+                        builder: (context, editingController, node) {
+                          return TextField(
+                            controller: editingController,
+                            focusNode: node,
+                            autofocus: true,
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Search Recipes',
+                                prefixIcon: Icon(Icons.search),
+                                filled: true,
+                                fillColor: Colors.white),
+                            onSubmitted: (value) {
+                              _searchRecipe(value);
+                            },
+                          );
+                        },
+                        itemBuilder:
+                            (context, Map<String, dynamic> suggestion) {
+                          return ListTile(
+                            leading: Image.network(
+                              suggestion['imageUrl'],
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            ),
+                            title: Text(suggestion['title']),
+                          );
+                        },
+                        onSelected: (Map<String, dynamic> suggestion) {
+                          // Handle suggestion selection (e.g., navigate to details page)
+                          _searchController.text = suggestion['title'];
+                          print('Selected recipe: ${suggestion['title']}');
+                        },
+                        suggestionsCallback: (pattern) async {
+                          return await _getRecipeSuggestions(pattern);
+                        },
+                        emptyBuilder: (context) => const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('No recipes found.'),
+                        ),
+                      ),
+                      // child: TextField(
+                      //   controller: _searchController,
+                      //   decoration: InputDecoration(
+                      //     hintText: 'Search for recipes...',
+                      //     filled: true,
+                      //     fillColor: Colors.white,
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(10.0),
+                      //       borderSide: BorderSide.none,
+                      //     ),
+                      //     prefixIcon: const Icon(Icons.search),
+                      //   ),
+                      //   onSubmitted: (value) {
+                      //     _searchRecipe(value);
+                      //     // Implement search functionality
+                      //   },
+                      // ),
+                    ),
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _searchRecipe(
+                            _searchController.text); // Navigate to search
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                      child: const Text('Search'),
+                    ),
+                  ],
                 ),
-                child: const Text('Search'),
-              ),
-            ],
-          ),
-        ],
-      ),
+              ],
+            ),
       bottomNavigationBar: const BottomAppBar(
         color: Colors.orangeAccent,
         child: Padding(
@@ -350,7 +369,8 @@ class _HomePageState extends State<HomePage> {
         return {
           'id': item['id'],
           'title': item['title'],
-          'imageUrl': 'https://spoonacular.com/recipeImages/${item['id']}-312x231.${item['imageType']}',
+          'imageUrl':
+              'https://spoonacular.com/recipeImages/${item['id']}-312x231.${item['imageType']}',
         };
       }).toList();
     } catch (e) {

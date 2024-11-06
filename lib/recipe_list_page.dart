@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 class RecipeListPage extends StatefulWidget {
   final Recipes recipesList;
+
   const RecipeListPage({super.key, required this.recipesList});
 
   @override
@@ -14,7 +15,6 @@ class RecipeListPage extends StatefulWidget {
 }
 
 class _RecipeListPageState extends State<RecipeListPage> {
-
   @override
   void initState() {
     super.initState();
@@ -27,58 +27,56 @@ class _RecipeListPageState extends State<RecipeListPage> {
 
     return SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-            title: const Text("Recipe List"),
-          ),
-          body: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () async {
-                      _showLoadingDialog();
-                      var recipe = result[index]; // Get the first recipe
+      appBar: AppBar(
+        title: const Text("Recipe List"),
+      ),
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: ListView.separated(
+            itemBuilder: (context, index) {
+              return InkWell(
+                onTap: () async {
+                  _showLoadingDialog();
+                  var recipe = result[index]; // Get the first recipe
 
-                      // Fetch detailed information about the recipe
-                      final recipeResponse = await http.get(Uri.parse(
-                          'https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=$apiKey'));
-                      if (recipeResponse.statusCode == 200) {
-                        Navigator.of(context).pop();
-                        var recipeDetail = json.decode(recipeResponse.body);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RecipeDetailPage.fromJson(recipeDetail),
-                          ),
-                        );
-                      } else {
-                        Navigator.of(context).pop();
-                        _showMessage('Failed to fetch recipe details.');
-                      }
-                    },
-                    child: ListTile(
-                      leading: CachedNetworkImage(
-                          width: 70.0,
-                          height: 70.0,
-                          imageUrl: result[index].image,
-                          placeholder: (context, url) => Image.asset('assets/images/placeholder.jpeg'),
-                          errorWidget: (context, url, error) => Image.asset('assets/images/placeholder.jpeg')
+                  // Fetch detailed information about the recipe
+                  final recipeResponse = await http.get(Uri.parse(
+                      'https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=$apiKey'));
+                  if (recipeResponse.statusCode == 200) {
+                    Navigator.of(context).pop();
+                    var recipeDetail = json.decode(recipeResponse.body);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RecipeDetailPage.fromJson(recipeDetail),
                       ),
-                      title: Text(
-                        result[index].title
-                      ),
-                      // subtitle: Text("Ready in: ${result[index].readyInMinutes} minutes"),
-                    ),
-                  );
+                    );
+                  } else {
+                    Navigator.of(context).pop();
+                    _showMessage('Failed to fetch recipe details.');
+                  }
                 },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(height: 20.0);
-                },
-                itemCount: result.length
-            ),
-          ),
-        )
-    );
+                child: ListTile(
+                  leading: CachedNetworkImage(
+                      width: 70.0,
+                      height: 70.0,
+                      imageUrl: result[index].image,
+                      placeholder: (context, url) =>
+                          Image.asset('assets/images/placeholder.jpeg'),
+                      errorWidget: (context, url, error) =>
+                          Image.asset('assets/images/placeholder.jpeg')),
+                  title: Text(result[index].title),
+                  // subtitle: Text("Ready in: ${result[index].readyInMinutes} minutes"),
+                ),
+              );
+            },
+            separatorBuilder: (context, index) {
+              return const SizedBox(height: 20.0);
+            },
+            itemCount: result.length),
+      ),
+    ));
   }
 
   void _showMessage(String message) {
@@ -105,13 +103,12 @@ class _RecipeListPageState extends State<RecipeListPage> {
     showDialog(
         context: context,
         builder: (context) => const Dialog(
-          child: SizedBox(
-            height: 100.0,
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
-        )
-    );
+              child: SizedBox(
+                height: 100.0,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ));
   }
 }

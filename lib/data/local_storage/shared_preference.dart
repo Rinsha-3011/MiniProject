@@ -55,7 +55,6 @@ class SharedPreferencesService {
     _saveData(_kPreferredCuisine, value);
   }
 
-
   dynamic _getData(String key) {
     var value = _preferences.get(key);
     debugPrint('Retrieved $key: $value');

@@ -5,7 +5,6 @@ import 'package:mynewapp/data/models/ingredient_recipes.dart';
 import 'package:mynewapp/ingredient_recipe_list_page.dart';
 import 'dart:convert';
 
-
 class SearchByIngredientPage extends StatefulWidget {
   @override
   _SearchByIngredientPageState createState() => _SearchByIngredientPageState();
@@ -19,7 +18,8 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
   };
 
   Map<String, bool> _selectedIngredients = {};
-  final String apiKey = 'c6ab8afed6414c3e994ecafdbd0ee35b'; // Replace with your API key
+  final String apiKey =
+      'c6ab8afed6414c3e994ecafdbd0ee35b'; // Replace with your API key
 
   @override
   void initState() {
@@ -44,15 +44,19 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
     _showLoadingDialog();
 
     String ingredientList = selected.join(',');
-    print("Request URL: 'https://api.spoonacular.com/recipes/findByIngredients?ingredients=$ingredientList&apiKey=$apiKey");
+    print(
+        "Request URL: 'https://api.spoonacular.com/recipes/findByIngredients?ingredients=$ingredientList&apiKey=$apiKey");
     final response = await http.get(Uri.parse(
         'https://api.spoonacular.com/recipes/findByIngredients?ingredients=$ingredientList&apiKey=$apiKey'));
 
     if (response.statusCode == 200) {
       Navigator.of(context).pop();
       final recipes = json.decode(response.body);
-      final ingredientRecipes = List<IngredientRecipes>.from(recipes.map((x) => IngredientRecipes.fromJson(x)));
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => IngredientRecipeListPage(recipes: ingredientRecipes)));
+      final ingredientRecipes = List<IngredientRecipes>.from(
+          recipes.map((x) => IngredientRecipes.fromJson(x)));
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) =>
+              IngredientRecipeListPage(recipes: ingredientRecipes)));
       // List<RecipeDetail> recipeDetails = await _fetchRecipeDetails(recipes);
       // Navigator.of(context).pop();
       // _showRecipes(recipeDetails);
@@ -90,7 +94,8 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(recipes[index].title),
-                  leading: Image.network(recipes[index].imageUrl, width: 50, height: 50),
+                  leading: Image.network(recipes[index].imageUrl,
+                      width: 50, height: 50),
                   subtitle: Text(recipes[index].summary),
                   onTap: () {
                     _showRecipeDetails(recipes[index]);
@@ -125,7 +130,9 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
                 Image.network(recipe.imageUrl),
                 const SizedBox(height: 10),
                 const Text('Ingredients:'),
-                ...recipe.ingredients.map((ingredient) => Text('- $ingredient')).toList(),
+                ...recipe.ingredients
+                    .map((ingredient) => Text('- $ingredient'))
+                    .toList(),
                 const SizedBox(height: 10),
                 const Text('Instructions:'),
                 Text(recipe.instructions),
@@ -169,23 +176,22 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
     showDialog(
         context: context,
         builder: (context) => const Dialog(
-          child: SizedBox(
-            height: 100.0,
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
-        )
-    );
+              child: SizedBox(
+                height: 100.0,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Search by Ingredient'),
-          backgroundColor: Colors.orangeAccent,
-          foregroundColor: Colors.white,
+        title: const Text('Search by Ingredient'),
+        backgroundColor: Colors.orangeAccent,
+        foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -200,7 +206,8 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
                     children: [
                       Text(
                         entry.key,
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       ...entry.value.map((ingredient) {
                         return CheckboxListTile(
@@ -226,9 +233,10 @@ class _SearchByIngredientPageState extends State<SearchByIngredientPage> {
                 ElevatedButton(
                   onPressed: _searchRecipes,
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent),
-                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white)
-                  ),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.orangeAccent),
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white)),
                   child: const Text('Search Recipes'),
                 ),
               ],
@@ -261,7 +269,8 @@ class RecipeDetail {
       imageUrl: json['image'],
       summary: json['summary'],
       instructions: json['instructions'] ?? 'No instructions available.',
-      ingredients: List<String>.from(json['extendedIngredients'].map((ingredient) => ingredient['name'])),
+      ingredients: List<String>.from(
+          json['extendedIngredients'].map((ingredient) => ingredient['name'])),
     );
   }
 }
