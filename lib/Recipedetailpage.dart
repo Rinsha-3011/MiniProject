@@ -73,11 +73,16 @@ class RecipeDetailPage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(instructions),
+              child: Text(removeHtmlTags(instructions)),
             ),
           ],
         ),
       ),
     );
+  }
+
+  String removeHtmlTags(String htmlString) {
+    final RegExp exp = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
+    return htmlString.replaceAll(exp, '');
   }
 }

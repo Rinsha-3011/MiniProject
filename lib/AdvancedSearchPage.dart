@@ -92,13 +92,17 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Advanced Search')),
+      appBar: AppBar(
+          title: const Text('Advanced Search'),
+        backgroundColor: Colors.orangeAccent,
+        foregroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: 'Preferred Cuisine'),
+              decoration: const InputDecoration(labelText: 'Preferred Cuisine'),
               value: selectedCuisine,
               onChanged: (value) {
                 setState(() {
@@ -113,7 +117,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
               }).toList(),
             ),
             DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: 'Dietary Restriction'),
+              decoration: const InputDecoration(labelText: 'Dietary Restriction'),
               value: selectedDiet,
               onChanged: (value) {
                 setState(() {
@@ -128,7 +132,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
               }).toList(),
             ),
             DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: 'Difficulty Level'),
+              decoration: const InputDecoration(labelText: 'Difficulty Level'),
               value: selectedDifficulty,
               onChanged: (value) {
                 setState(() {
@@ -143,7 +147,7 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
               }).toList(),
             ),
             DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: 'Cooking Time'),
+              decoration: const InputDecoration(labelText: 'Cooking Time'),
               value: selectedTime,
               onChanged: (value) {
                 setState(() {
@@ -157,15 +161,15 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
                 onPressed: _searchRecipes,
-                child: Text('Search Recipes'),
                 style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.indigo),
+                        MaterialStateProperty.all<Color>(Colors.orangeAccent),
                     foregroundColor:
-                        MaterialStateProperty.all<Color>(Colors.white))),
+                        MaterialStateProperty.all<Color>(Colors.white)),
+                child: const Text('Search Recipes')),
           ],
         ),
       ),

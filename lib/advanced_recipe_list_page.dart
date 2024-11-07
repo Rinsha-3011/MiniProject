@@ -26,6 +26,8 @@ class _AdvancedRecipeListPageState extends State<AdvancedRecipeListPage> {
             title: const Text(
               'Advanced Recipes'
             ),
+            backgroundColor: Colors.orangeAccent,
+            foregroundColor: Colors.white,
           ),
           body: SizedBox(
             height: MediaQuery.of(context).size.height,

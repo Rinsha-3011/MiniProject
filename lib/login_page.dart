@@ -7,76 +7,24 @@ import 'package:mynewapp/homepage.dart';
 import 'package:mynewapp/services/service_locator.dart';
 import 'package:mynewapp/sign_in_page.dart';
 import 'auth.dart';
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
-class LoginPage extends StatelessWidget {
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final sharedPrefService = serviceLocator<SharedPreferencesService>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final AuthService _authService = AuthService();
 
-  Future<void> login(BuildContext context) async {
-    String email = emailController.text.trim();
-    String password = passwordController.text;
-
-    try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      if (userCredential.user?.uid != null) {
-        DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential
-                .user?.uid) // Access the document using the user's UID
-            .get();
-        if (documentSnapshot.exists) {
-          print("Documents: ${documentSnapshot.data()}");
-          final user = UserDetails.fromJson(
-              documentSnapshot.data() as Map<String, dynamic>);
-          sharedPrefService.userName = user.name;
-          sharedPrefService.email = user.email;
-          sharedPrefService.dietryRestriction = user.dietaryRestriction;
-          sharedPrefService.preferredCuisine = user.preferredCuisine;
-          sharedPrefService.userUid = userCredential.user!.uid;
-          sharedPrefService.userLoggedInFlag = true;
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => HomePage()),
-              (Route<dynamic> route) => false);
-        } else {
-          print("User data fetch error");
-        }
-        // sharedPrefService.userLoggedInFlag = true;
-      }
-
-      print('User logged in: ${userCredential.user!.email}');
-      // Navigate to the home page or another screen here
-    } catch (e) {
-      print('Login failed: $e');
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Login Failed'),
-            content: Text(e.toString()),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blueGrey[50],
+      // resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Login'),
         centerTitle: true,
@@ -89,7 +37,7 @@ class LoginPage extends StatelessWidget {
           child: Card(
             elevation: 8,
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -128,9 +76,20 @@ class LoginPage extends StatelessWidget {
                     ),
                     obscureText: true,
                   ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: TextButton(
+                      onPressed: () {
+                        _showLoadingDialog();
+                        _sendPasswordResetEmail();
+                      },
+                      child: const Text('Forgot password?',
+                          style: TextStyle(color: Colors.orangeAccent)),
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () => login(context),
+                    onPressed: () => login(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orangeAccent,
                       foregroundColor: Colors.white,
@@ -142,14 +101,16 @@ class LoginPage extends StatelessWidget {
                     child: const Text('Login', style: TextStyle(fontSize: 16)),
                   ),
                   const SizedBox(height: 10),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => SignInPage()));
-                    },
-                    child: const Text('Sign Up?',
-                        style: TextStyle(color: Colors.black)),
-                  ),
+                  Flexible(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SignInPage()));
+                      },
+                      child: const Text('Sign Up',
+                          style: TextStyle(color: Colors.orangeAccent)),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -157,5 +118,129 @@ class LoginPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> login() async {
+    _showLoadingDialog();
+    String email = emailController.text.trim();
+    String password = passwordController.text;
+
+    try {
+      UserCredential userCredential =
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      if (userCredential.user?.uid != null) {
+        DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential
+            .user?.uid) // Access the document using the user's UID
+            .get();
+        if (documentSnapshot.exists) {
+          print("Documents: ${documentSnapshot.data()}");
+          final user = UserDetails.fromJson(
+              documentSnapshot.data() as Map<String, dynamic>);
+          sharedPrefService.userName = user.name;
+          sharedPrefService.email = user.email;
+          sharedPrefService.dietryRestriction = user.dietaryRestriction;
+          sharedPrefService.preferredCuisine = user.preferredCuisine;
+          sharedPrefService.userUid = userCredential.user!.uid;
+          sharedPrefService.userLoggedInFlag = true;
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomePage()),
+                  (Route<dynamic> route) => false);
+        } else {
+          Navigator.of(context).pop();
+          _showMessage("User data fetch error");
+          print("User data fetch error");
+        }
+        // sharedPrefService.userLoggedInFlag = true;
+      }
+
+      print('User logged in: ${userCredential.user!.email}');
+      // Navigate to the home page or another screen here
+    } catch (e) {
+      Navigator.of(context).pop();
+      print('Login failed: $e');
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Login Failed'),
+            content: Text(e.toString()),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _sendPasswordResetEmail() async {
+    String email = emailController.text;
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    if (email.isNotEmpty) {
+      try {
+        await _auth.sendPasswordResetEmail(email: email);
+        Navigator.of(context).pop();
+        _showMessage('Password reset email sent.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password reset email sent.')),
+        );
+      } catch (e) {
+        print('Error: $e');
+        Navigator.of(context).pop();
+        _showMessage('Failed to send reset email: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send reset email: $e')),
+        );
+      }
+    } else {
+      Navigator.of(context).pop();
+      _showMessage('Please enter an email address.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter an email address.')),
+      );
+    }
+  }
+
+  void _showMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Message'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showLoadingDialog() {
+    showDialog(
+        context: context,
+        builder: (context) => const Dialog(
+          child: SizedBox(
+            height: 100.0,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ));
   }
 }
